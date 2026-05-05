@@ -4,40 +4,44 @@ import { Book as BookIcon, Clock, TrendingUp, Sparkles, ChevronRight, Bookmark, 
 import { Book } from '../types';
 import { getBookRecommendation } from '../services/gemini';
 import { useLibrary } from '../hooks/useLibrary';
+import { useAuth } from '../context/AuthContext';
 
 const Dashboard: React.FC = () => {
-  const { books, borrows } = useLibrary();
+  const { books, borrows, favorites } = useLibrary();
+  const { user } = useAuth();
   const [recommendation, setRecommendation] = useState<string | null>(null);
   const [loadingRec, setLoadingRec] = useState(false);
 
   const activeBorrows = borrows.filter(b => b.status === 'active').length;
+  const returnedCount = borrows.filter(b => b.status === 'returned').length;
 
   useEffect(() => {
     const fetchRec = async () => {
       setLoadingRec(true);
+      const favoriteTitles = books.filter(b => favorites.includes(b.id)).map(b => b.title).join(', ');
       const rec = await getBookRecommendation(
-        `Interested in science and cosmology, current borrowed books: ${activeBorrows}`,
-        "University Student",
+        `User is a ${user?.segment}. They have borrowed ${activeBorrows} books. Their favorites include: ${favoriteTitles || 'None yet'}.`,
+        user?.segment || "User",
         books
       );
       setRecommendation(rec || null);
       setLoadingRec(false);
     };
-    fetchRec();
-  }, [activeBorrows]);
+    if (user) fetchRec();
+  }, [activeBorrows, user, favorites]);
 
   return (
     <div className="space-y-12">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl md:text-5xl text-primary mb-2">Welcome back, Explorer</h1>
-          <p className="text-gray-500 font-sans">You have {activeBorrows} books borrowed and 0 due this week.</p>
+          <h1 className="text-4xl md:text-5xl text-primary mb-2">Welcome back, {user?.name.split(' ')[0] || 'Explorer'}</h1>
+          <p className="text-gray-500 font-sans">You have {activeBorrows} books borrowed and {returnedCount} successfully returned.</p>
         </div>
         <div className="flex gap-4">
            <div className="text-right">
               <span className="block text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">User Segment</span>
-              <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-xs font-bold uppercase tracking-wider">University Student</span>
+              <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-xs font-bold uppercase tracking-wider">{user?.segment || "Member"}</span>
            </div>
         </div>
       </div>
@@ -46,9 +50,9 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
           { label: 'Total Collection', value: books.length.toString(), icon: BookIcon, color: 'text-blue-500' },
-          { label: 'Currently Borrowed', value: activeBorrows.toString(), icon: Clock, color: 'text-orange-500' },
-          { label: 'Return Rate', value: '100%', icon: TrendingUp, color: 'text-green-500' },
-          { label: 'Saved Items', value: '0', icon: Bookmark, color: 'text-purple-500' },
+          { label: 'Active Borrows', value: activeBorrows.toString(), icon: Clock, color: 'text-orange-500' },
+          { label: 'Total Read', value: (activeBorrows + returnedCount).toString(), icon: TrendingUp, color: 'text-green-500' },
+          { label: 'Wishlist Items', value: favorites.length.toString(), icon: Bookmark, color: 'text-purple-500' },
         ].map((stat, i) => (
           <motion.div
             key={i}
@@ -136,20 +140,26 @@ const Dashboard: React.FC = () => {
         <div className="space-y-8">
           <h2 className="text-3xl text-primary">Library Updates</h2>
           <div className="space-y-6">
-             {[
-               { title: 'New Arrival', desc: 'Sapiens: A Brief History of Humankind', time: '2 hours ago' },
-               { title: 'Borrowed', desc: 'You borrowed "The Great Gatsby"', time: 'Yesterday' },
-               { title: 'Due Soon', desc: '"Atomic Habits" is due in 2 days', time: '3 hours ago' },
-             ].map((update, i) => (
-               <div key={i} className="flex gap-4 items-start p-4 rounded-2xl hover:bg-white hover:soft-shadow transition-all group">
-                  <div className="w-2 h-2 rounded-full bg-accent mt-2 group-hover:scale-150 transition-transform" />
-                  <div>
-                    <h4 className="font-serif text-primary font-bold">{update.title}</h4>
-                    <p className="text-sm text-gray-500 font-sans line-clamp-1">{update.desc}</p>
-                    <span className="text-[10px] uppercase font-bold text-gray-300 tracking-widest mt-1 block">{update.time}</span>
-                  </div>
-               </div>
-             ))}
+             {borrows.slice(0, 4).map((record, i) => {
+               const book = books.find(b => b.id === record.bookId);
+               return (
+                 <div key={i} className="flex gap-4 items-start p-4 rounded-2xl hover:bg-white hover:soft-shadow transition-all group">
+                    <div className="w-2 h-2 rounded-full bg-accent mt-2 group-hover:scale-150 transition-transform" />
+                    <div>
+                      <h4 className="font-serif text-primary font-bold">{record.status === 'active' ? 'Borrowed' : 'Returned'}</h4>
+                      <p className="text-sm text-gray-500 font-sans line-clamp-1">
+                        {record.status === 'active' ? `You borrowed "${book?.title}"` : `You returned "${book?.title}"`}
+                      </p>
+                      <span className="text-[10px] uppercase font-bold text-gray-300 tracking-widest mt-1 block">
+                        {new Date(record.borrowDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                 </div>
+               );
+             })}
+             {borrows.length === 0 && (
+               <p className="text-gray-400 text-sm italic py-4">No recent activity found.</p>
+             )}
           </div>
           <div className="p-8 bg-primary-light rounded-[32px] border border-primary/5">
              <h4 className="text-xl text-primary mb-4 italic">Quick Pro Tip</h4>

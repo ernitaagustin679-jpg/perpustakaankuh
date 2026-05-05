@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Filter, BookOpen, Download, Star, ExternalLink, ChevronDown, CheckCircle2, XCircle, Sparkles } from 'lucide-react';
+import { Search, Filter, BookOpen, Download, Star, ExternalLink, ChevronDown, CheckCircle2, XCircle, Sparkles, Heart } from 'lucide-react';
 import { useLibrary } from '../hooks/useLibrary';
 import ResourceLink from '../components/ResourceLink';
 
 const Catalog: React.FC = () => {
-  const { books, borrowBook } = useLibrary();
+  const { books, borrowBook, favorites, toggleFavorite } = useLibrary();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
@@ -126,11 +126,16 @@ const Catalog: React.FC = () => {
                     <Download size={20} />
                   </button>
                </div>
-               {!book.available && (
-                 <div className="absolute top-6 right-6 px-4 py-2 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">
-                   Out of Stock
-                 </div>
-               )}
+               <button 
+                 onClick={() => toggleFavorite(book.id)}
+                 className={`absolute top-6 right-6 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-lg z-10 ${
+                   favorites.includes(book.id) 
+                     ? 'bg-accent text-white scale-110' 
+                     : 'bg-white/90 backdrop-blur-sm text-gray-400 hover:text-accent'
+                 }`}
+               >
+                 <Heart size={18} fill={favorites.includes(book.id) ? "currentColor" : "none"} />
+               </button>
                <div className="absolute bottom-6 left-6 flex items-center gap-1 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
                  <Star size={12} className="text-accent fill-accent" />
                  <span className="text-xs font-bold text-primary">{book.rating}</span>

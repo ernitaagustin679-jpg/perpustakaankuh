@@ -14,8 +14,8 @@ const Home: React.FC = () => {
         </div>
         <div className="hidden md:flex gap-8 items-center text-sm font-medium text-gray-500 uppercase tracking-widest">
            <a href="#features" className="hover:text-primary transition-colors">Features</a>
-           <a href="#segments" className="hover:text-primary transition-colors">Segments</a>
-           <Link to="/dashboard" className="bg-primary text-white px-6 py-3 rounded-full hover:shadow-lg transition-all">Get Started</Link>
+           <Link to="/login" className="hover:text-primary transition-colors">Login</Link>
+           <Link to="/register" className="bg-primary text-white px-6 py-3 rounded-full hover:shadow-lg transition-all">Get Started</Link>
         </div>
       </nav>
 
@@ -34,11 +34,11 @@ const Home: React.FC = () => {
             <span className="text-accent italic font-light">Redefined.</span>
           </h1>
           <p className="text-lg text-gray-600 mb-12 max-w-md leading-relaxed">
-            Perpustakaanku is more than just a catalog. It's a smart ecosystem that understands your reading journey as a student, teacher, or explorer.
+            Library Hub is more than just a catalog. It's a smart ecosystem that understands your reading journey as a student, teacher, or explorer.
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link to="/dashboard" className="bg-primary text-white px-10 py-5 rounded-full flex items-center gap-3 group hover:shadow-2xl transition-all">
-              <span className="font-semibold uppercase tracking-widest text-sm">Enter Dashboard</span>
+            <Link to="/register" className="bg-primary text-white px-10 py-5 rounded-full flex items-center gap-3 group hover:shadow-2xl transition-all">
+              <span className="font-semibold uppercase tracking-widest text-sm">Join Now</span>
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

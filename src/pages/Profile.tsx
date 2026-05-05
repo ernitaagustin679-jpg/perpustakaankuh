@@ -1,15 +1,20 @@
 import React from 'react';
-import { User, Mail, Shield, BookOpen, Settings, Bell, Globe, ExternalLink } from 'lucide-react';
+import { User, Mail, Shield, Settings, Bell, Globe, ExternalLink } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Profile: React.FC = () => {
+  const { user } = useAuth();
+
+  if (!user) return null;
+
   return (
     <div className="max-w-4xl space-y-12">
       <div className="flex flex-col md:flex-row items-center gap-12">
          <div className="relative">
             <div className="w-40 h-40 rounded-[48px] overflow-hidden shadow-2xl bg-primary/5 flex items-center justify-center relative group">
                <img 
-                 src="https://1drv.ms/i/c/A95EB84DE78AEDA3/IQClfSlZNGYyQ4SSI8ESsE3EAWzxU0BqBUfrI0b8JQPV9sQ?e=NC5zzLcrop" 
-                 alt="User Avatar" 
+                 src={user.avatar || "https://images.unsplash.com/photo-1616763355548-1b606f737f53?q=80&w=1000&auto=format&fit=crop"} 
+                 alt={user.name} 
                  className="w-full h-full object-cover opacity-80" 
                />
                <a 
@@ -29,12 +34,12 @@ const Profile: React.FC = () => {
          <div className="text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 text-accent text-[10px] font-bold uppercase tracking-widest mb-4">
                <Shield size={12} />
-               <span>Verified Librarian</span>
+               <span>Verified {user.segment}</span>
             </div>
-            <h1 className="text-5xl text-primary mb-2 italic">Ernita Agustin</h1>
+            <h1 className="text-5xl text-primary mb-2 italic">{user.name}</h1>
             <p className="text-gray-500 font-sans flex items-center justify-center md:justify-start gap-2">
                <Mail size={16} />
-               ernitaagustin679@gmail.com
+               {user.email}
             </p>
          </div>
       </div>
@@ -49,11 +54,11 @@ const Profile: React.FC = () => {
                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="block text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-1">User ID</span>
-                    <span className="text-primary font-bold">UID-280426</span>
+                    <span className="text-primary font-bold">UID-{user.id.toUpperCase()}</span>
                   </div>
                   <div>
-                    <span className="block text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-1">Birthday</span>
-                    <span className="text-primary font-bold">April 28th</span>
+                    <span className="block text-[10px] uppercase font-bold text-gray-400 tracking-widest mb-1">User Segment</span>
+                    <span className="text-primary font-bold">{user.segment}</span>
                   </div>
                </div>
                <div>

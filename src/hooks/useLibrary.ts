@@ -68,6 +68,50 @@ const INITIAL_BOOKS: Book[] = [
     available: true,
     rating: 4.6,
     tags: ['Adventure', 'Fiction']
+  },
+  {
+    id: '7',
+    title: 'The Psychology of Money',
+    author: 'Morgan Housel',
+    category: 'Finance',
+    description: 'Doing well with money isn’t necessarily about what you know. It’s about how you behave.',
+    coverImage: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=1000&auto=format&fit=crop',
+    available: true,
+    rating: 4.9,
+    tags: ['Finance', 'Psychology']
+  },
+  {
+    id: '8',
+    title: 'Clean Code',
+    author: 'Robert C. Martin',
+    category: 'Technology',
+    description: 'A handbook of agile software craftsmanship.',
+    coverImage: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=1000&auto=format&fit=crop',
+    available: true,
+    rating: 4.8,
+    tags: ['Coding', 'Engineering']
+  },
+  {
+    id: '9',
+    title: 'Sapiens',
+    author: 'Yuval Noah Harari',
+    category: 'History',
+    description: 'A brief history of humankind.',
+    coverImage: 'https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=1000&auto=format&fit=crop',
+    available: true,
+    rating: 4.8,
+    tags: ['History', 'Science']
+  },
+  {
+    id: '10',
+    title: "Man's Search for Meaning",
+    author: 'Viktor Frankl',
+    category: 'Psychology',
+    description: 'Psychiatrist Viktor Frankl’s memoir has riveted generations of readers with its descriptions of life in Nazi death camps.',
+    coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1000&auto=format&fit=crop',
+    available: true,
+    rating: 4.9,
+    tags: ['Psychology', 'Philosophy']
   }
 ];
 
@@ -82,29 +126,44 @@ export function useLibrary() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem('lib_favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   useEffect(() => {
     localStorage.setItem('lib_books', JSON.stringify(books));
     localStorage.setItem('lib_borrows', JSON.stringify(borrows));
-  }, [books, borrows]);
+    localStorage.setItem('lib_favorites', JSON.stringify(favorites));
+  }, [books, borrows, favorites]);
+
+  const toggleFavorite = (bookId: string) => {
+    setFavorites(prev => 
+      prev.includes(bookId) ? prev.filter(id => id !== bookId) : [...prev, bookId]
+    );
+  };
 
   const borrowBook = (bookId: string) => {
-    setBooks(prev => prev.map(b => b.id === bookId ? { ...b, available: false } : b));
+    // We allow multi-borrowing without strict limitations as requested
     const newBorrow: BorrowRecord = {
       id: Math.random().toString(36).substr(2, 9),
-      userId: 'user1', // Demo user
+      userId: 'current-user', 
       bookId,
       borrowDate: new Date().toISOString(),
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days
       status: 'active'
     };
     setBorrows(prev => [...prev, newBorrow]);
+    // Optional: Mark book as unavailable if it's a physical singular item, 
+    // but the user wants "unlimited", so we keep it available for others.
     return newBorrow;
   };
 
-  const returnBook = (bookId: string) => {
-    setBooks(prev => prev.map(b => b.id === bookId ? { ...b, available: true } : b));
-    setBorrows(prev => prev.map(br => br.bookId === bookId && br.status === 'active' ? { ...br, status: 'returned', returnDate: new Date().toISOString() } : br));
+  const returnBook = (borrowId: string) => {
+    setBorrows(prev => prev.map(br => 
+      br.id === borrowId ? { ...br, status: 'returned', returnDate: new Date().toISOString() } : br
+    ));
   };
 
-  return { books, borrows, borrowBook, returnBook };
+  return { books, borrows, favorites, borrowBook, returnBook, toggleFavorite };
 }
