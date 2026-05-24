@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Filter, BookOpen, Download, Star, ExternalLink, ChevronDown, CheckCircle2, XCircle, Sparkles, Heart } from 'lucide-react';
 import { useLibrary } from '../hooks/useLibrary';
@@ -119,10 +120,18 @@ const Catalog: React.FC = () => {
                  referrerPolicy="no-referrer"
                />
                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                  <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:scale-110 transition-transform shadow-lg">
+                  <Link 
+                    to={`/reader?bookId=${book.id}`}
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:scale-110 transition-transform shadow-lg"
+                    title="Read Digital E-Book"
+                  >
                     <BookOpen size={20} />
-                  </button>
-                  <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:scale-110 transition-transform shadow-lg">
+                  </Link>
+                  <button 
+                    onClick={() => setToast({ message: `Successfully synchronized "${book.title}" with your local reading shelf!`, type: 'success' })}
+                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-primary hover:scale-110 transition-transform shadow-lg"
+                    title="Download offline replica"
+                  >
                     <Download size={20} />
                   </button>
                </div>

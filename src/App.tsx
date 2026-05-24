@@ -11,6 +11,7 @@ const Activity = lazy(() => import('./pages/Activity'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const DigitalReader = lazy(() => import('./pages/DigitalReader'));
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading } = useAuth();
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             <Route path="/catalog" element={<PageTransition><Catalog /></PageTransition>} />
             <Route path="/activity" element={<PageTransition><Activity /></PageTransition>} />
             <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+            <Route path="/reader" element={<PageTransition><DigitalReader /></PageTransition>} />
           </Route>
           
           <Route path="*" element={<Navigate to="/" replace />} />

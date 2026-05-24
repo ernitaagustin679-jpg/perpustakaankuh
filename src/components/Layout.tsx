@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Book, LayoutDashboard, Search, User, LogOut, Library } from 'lucide-react';
+import { Book, LayoutDashboard, Search, User, LogOut, Library, BookOpen } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useAuth } from '../context/AuthContext';
 
@@ -14,6 +14,7 @@ const Layout: React.FC = () => {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Catalog', path: '/catalog', icon: Search },
     { name: 'My Activity', path: '/activity', icon: Library, badge: true },
+    { name: 'Digital Reader', path: '/reader', icon: BookOpen },
     { name: 'Profile', path: '/profile', icon: User },
   ];
 

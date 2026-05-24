@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Book as BookIcon, Clock, TrendingUp, Sparkles, ChevronRight, Bookmark, ArrowRight, Loader2 } from 'lucide-react';
 import { Book } from '../types';
@@ -92,10 +93,13 @@ const Dashboard: React.FC = () => {
                 </p>
               )}
            </div>
-           <button className="bg-white text-primary px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform flex items-center gap-2 group shadow-xl">
+           <Link 
+             to="/reader" 
+             className="bg-white text-primary px-8 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform flex items-center gap-2 group shadow-xl"
+           >
               Explorer Recommendation
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-           </button>
+           </Link>
         </div>
         {/* Background blobs */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[100px] -z-0 translate-x-1/2 -translate-y-1/2" />
@@ -128,9 +132,12 @@ const Dashboard: React.FC = () => {
                       <h3 className="text-xl mb-1 text-primary">{book.title}</h3>
                       <p className="text-gray-400 text-sm italic mb-4">by {book.author}</p>
                     </div>
-                    <button className="w-full py-4 border border-primary/10 rounded-2xl font-bold uppercase tracking-widest text-[10px] text-primary hover:bg-primary hover:text-white transition-all">
-                      View Details
-                    </button>
+                    <Link 
+                      to={`/reader?bookId=${book.id}`} 
+                      className="w-full py-4 border border-primary/10 rounded-2xl font-bold uppercase tracking-widest text-[10px] text-primary hover:bg-primary hover:text-white transition-all text-center block"
+                    >
+                      Read E-Book
+                    </Link>
                   </div>
                 </div>
               ))}
